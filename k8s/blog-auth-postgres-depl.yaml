@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-auth-java-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-auth-java-postgres
+  template:
+    metadata:
+      labels:
+        app: blog-auth-java-postgres
+    spec:
+      containers:
+        - name: blog-auth-java-postgres
+          image: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-auth-java-postgres-srv
+spec:
+  selector:
+    app: blog-auth-java-postgres
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

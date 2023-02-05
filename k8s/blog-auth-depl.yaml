@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-auth-java-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-auth-java
+  template:
+    metadata:
+      labels:
+        app: blog-auth-java
+    spec:
+      containers:
+        - name: blog-auth-java
+          image: darglk/blog-auth:latest
+          imagePullPolicy: Never
+          env:
+            - name: AUTH_SERVICE_POSTGRES_HOST
+              value: 'auth-java-mongo-srv'
+            - name: AUTH_SERVICE_POSTGRES_PORT
+              value: '5432'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-auth-java-srv
+spec:
+  selector:
+    app: blog-auth-java
+  ports:
+    - name: blog-auth-java
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
