@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: darglk/keycloak:latest
+          imagePullPolicy: Never
+          env:
+            - name: KC_DB_URL
+              value: 'jdbc:postgresql://keycloak-postgres-srv:5432/postgres'
+            - name: KC_DB
+              value: 'postgres'
+            - name: KC_DB_USERNAME
+              value: 'postgres'
+            - name: KC_DB_PASSWORD
+              value: 'example'
+            - name: KEYCLOAK_ADMIN
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: change_me
+            - name: KC_PROXY
+              value: edge
+            - name: KC_HOSTNAME
+              value: blog-java.dev
+            
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-srv
+spec:
+  selector:
+    app: keycloak
+  ports:
+    - name: keycloak
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
