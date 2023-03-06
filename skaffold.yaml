@@ -3,14 +3,16 @@ kind: Config
 deploy:
   kubectl:
     manifests:
-      - ./infra/k8s/*
+      - ./k8s/*
 build:
   local:
     push: false #nie pushuj do dokerhuba
   artifacts:
     - image: darglk/blog-auth
       context: ../blog-auth
-      jib: {}
+      jib: {
+        args: [-DskipTests]
+      }
       # docker:
       #   dockerfile: Dockerfile
       sync:

@@ -1,0 +1,24 @@
+aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
+oidc_id=$(aws eks describe-cluster --name $(terraform output -raw cluster_name) --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+aws iam list-open-id-connect-providers | grep $oidc_id | cut -d "/" -f4
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl utils associate-iam-oidc-provider --cluster $(terraform output -raw cluster_name) --approve
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy.json
+aws iam create-policy     --policy-name AWSLoadBalancerControllerIAMPolicy     --policy-document file://iam_policy.json
+-- skopiuj arn z powyzszej komendy
+eksctl create iamserviceaccount   --cluster=$(terraform output -raw cluster_name)   --namespace=kube-system   --name=aws-load-balancer-controller   --role-name AmazonEKSLoadBalancerControllerRole   --attach-policy-arn=arn:aws:iam::680359990703:policy/AWSLoadBalancerControllerIAMPolicy   --approve
+
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy_v1_to_v2_additional.json
+aws iam create-policy   --policy-name AWSLoadBalancerControllerAdditionalIAMPolicy   --policy-document file://iam_policy_v1_to_v2_additional.json
+-- tutaj tez arn
+aws iam attach-role-policy   --role-name AmazonEKSLoadBalancerControllerRole   --policy-arn arn:aws:iam::680359990703:policy/AWSLoadBalancerControllerAdditionalIAMPolicy
+kubectl apply     --validate=false     -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+curl -Lo v2_4_4_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.4/v2_4_4_full.yaml
+
+sed -i.bak -e '480,488d' ./v2_4_4_full.yaml
+
+sed -i.bak -e "s|your-cluster-name|$(terraform output -raw cluster_name)|" ./v2_4_4_full.yaml
+kubectl apply -f v2_4_4_full.yaml
+curl -Lo v2_4_4_ingclass.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.4/v2_4_4_ingclass.yaml
+kubectl apply -f v2_4_4_ingclass.yaml

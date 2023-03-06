@@ -18,9 +18,13 @@ spec:
           imagePullPolicy: Never
           env:
             - name: AUTH_SERVICE_POSTGRES_HOST
-              value: 'auth-java-mongo-srv'
+              value: 'blog-auth-java-postgres-srv'
             - name: AUTH_SERVICE_POSTGRES_PORT
               value: '5432'
+            - name: DB_USER
+              value: 'auth-svc'
+            - name: DB_PASS
+              value: 'auth-pass'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

@@ -15,6 +15,13 @@ spec:
       containers:
         - name: blog-auth-java-postgres
           image: postgres
+          env: 
+            - name: POSTGRES_USER
+              value: 'auth-svc'
+            - name: POSTGRES_PASSWORD
+              value: 'auth-pass'
+            - name: POSTGRES_DB
+              value: 'auth-svc'
 ---
 apiVersion: v1
 kind: Service
