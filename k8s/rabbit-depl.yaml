@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbit
+  template:
+    metadata:
+      labels:
+        app: rabbit
+    spec:
+      containers:
+        - name: rabbit
+          image: rabbitmq:3.9.3-management-alpine
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbit-srv
+spec:
+  selector:
+    app: rabbit
+  ports:
+    - name: rabbit-broker
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+    - name: rabbit-mgmt
+      protocol: TCP
+      port: 15672
+      targetPort: 15672

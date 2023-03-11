@@ -25,11 +25,39 @@ spec:
               value: 'auth-svc'
             - name: DB_PASS
               value: 'auth-pass'
+            - name: KEYCLOAK_SERVER_URL
+              value: 'keycloak-srv'
+            - name: KEYCLOAK_SERVER_PORT
+              value: '8080'
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: 'admin'
+            # TODO: change to secretKeyRef
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: 'change_me'
+            - name: KEYCLOAK_ADMIN_REALM
+              value: 'master'
+            - name: KEYCLOAK_ADMIN_CLIENT_ID
+              value: 'admin-cli'
+            - name: KEYCLOAK_API_REALM
+              value: 'blog'
+            - name: AUTH_SERVICE_URL
+              value: 'blog-auth-java-srv'
+            - name: AUTH_SERVICE_PORT
+              value: '8080'
             - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_KEY
+              value: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuEAulY4xvAPWN/GaZOkXGjM/2VVXrxwvpzmsGHPr+JAtzhcGruR8JJEADXU+859wA9zccCAW0T29UMpovLJIv8E8jjpoJyIjz5S5Ekc3LDuDbnV03LAxDEKIXkssYKYsntsQ8n2DVQAdK29/Mhtj7MHl3ibC1vn68s8nNc8D8wI8g/8UQ+Z1Yg/gUZYlKzHS4/k7mV8t6WTVR198dQv/5rClHEUozt1gTDiGLsylBZI901nRWZAVDLRq5u00g25pvmYB569i/g3i86UGuFnDnfUod6Wy6mnp/dNHuo9RWSZzr+5cYZCdMxL+t2p3aOw5+r8AcdHYaYhMgmUu/ENdiwIDAQAB
+            # To enable debuger in intellij uncomment below line and in terminal enter
+            # kubectl port-forward <pod-name> 5005:5005
+            - name: JAVA_TOOL_OPTIONS
+              value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: jwt-secret
+              #     key: JWT_KEY
+            - name: RABBIT_URL
+              value: 'rabbit-srv'
+            - name: RABBIT_PORT
+              value: '5672'
 ---
 apiVersion: v1
 kind: Service
