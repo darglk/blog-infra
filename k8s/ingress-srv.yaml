@@ -18,6 +18,13 @@ spec:
                 name: blog-auth-java-srv
                 port:
                   number: 8080
+          - path: /api/v1/posts/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: blog-posts-java-srv
+                port:
+                  number: 8080
           - path: /realms
             pathType: Prefix
             backend:

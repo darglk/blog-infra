@@ -19,3 +19,14 @@ build:
         manual:
           - src: 'src/java/**/*.java'
             dest: .
+    - image: darglk/blog-posts
+      context: ../blog-posts
+      jib: {
+        args: [-DskipTests]
+      }
+      # docker:
+      #   dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/java/**/*.java'
+            dest: .

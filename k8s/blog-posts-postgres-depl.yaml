@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-posts-java-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-posts-java-postgres
+  template:
+    metadata:
+      labels:
+        app: blog-posts-java-postgres
+    spec:
+      containers:
+        - name: blog-posts-java-postgres
+          image: postgres
+          env: 
+            - name: POSTGRES_USER
+              value: 'posts-svc'
+            - name: POSTGRES_PASSWORD
+              value: 'posts-pass'
+            - name: POSTGRES_DB
+              value: 'posts-svc'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-posts-java-postgres-srv
+spec:
+  selector:
+    app: blog-posts-java-postgres
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
